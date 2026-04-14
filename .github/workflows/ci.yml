@@ -51,7 +51,7 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: ${{ secrets.TEST_DB_USER || 'test_user' }}
+          POSTGRES_USER: test_user
           POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
           POSTGRES_DB: chocolate_test
         ports:
