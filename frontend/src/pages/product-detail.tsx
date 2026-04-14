@@ -24,7 +24,7 @@ export default function ProductDetailPage(): JSX.Element {
     )
   }
 
-  if (isError || !data) {
+  if (isError || !data || !data.data) {
     return (
       <main className="pt-20 min-h-screen bg-cream flex flex-col items-center justify-center gap-4">
         <p className="text-red-600 font-serif text-2xl">Unable to load product.</p>
@@ -33,6 +33,8 @@ export default function ProductDetailPage(): JSX.Element {
     )
   }
 
+  const product = data.data
+
   return (
     <main className="pt-20">
       <div className="max-w-screen-xl mx-auto px-6 py-4">
@@ -40,7 +42,7 @@ export default function ProductDetailPage(): JSX.Element {
           ← Back to collection
         </Link>
       </div>
-      <ProductDetail product={data.data} />
+      <ProductDetail product={product} />
     </main>
   )
 }

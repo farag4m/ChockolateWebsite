@@ -13,7 +13,7 @@ export default function ShopPage(): JSX.Element {
     )
   }
 
-  if (isError || !data) {
+  if (isError || !data || !data.data) {
     return (
       <main className="pt-20 min-h-screen bg-cream flex items-center justify-center">
         <p className="text-red-600 font-serif text-xl">Unable to load products. Please try again.</p>
@@ -38,7 +38,7 @@ export default function ShopPage(): JSX.Element {
 
           {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-14">
-            {data.data.map((product) => (
+            {(data.data ?? []).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

@@ -8,6 +8,18 @@ interface ProductCardProps {
   product: Product
 }
 
+const CATEGORY_LABEL: Record<Product['category'], string> = {
+  dark: 'Dark Chocolate',
+  milk: 'Milk Chocolate',
+  white: 'White Chocolate',
+}
+
+const CATEGORY_BG: Record<Product['category'], string> = {
+  dark: 'from-[#3d1f11] to-[#1a0a00]',
+  milk: 'from-[#8c6046] to-[#5a3a2a]',
+  white: 'from-[#f0d8b6] to-[#d4b998]',
+}
+
 export function ProductCard({ product }: ProductCardProps): JSX.Element {
   const { addItem } = useCart()
 
@@ -28,32 +40,32 @@ export function ProductCard({ product }: ProductCardProps): JSX.Element {
         <div
           className={clsx(
             'relative aspect-[4/3] rounded-xl flex items-center justify-center overflow-hidden',
-            `bg-gradient-to-br ${product.imageGradient}`,
+            `bg-gradient-to-br ${CATEGORY_BG[product.category]}`,
           )}
         >
-          {/* Wrapper label */}
-          <div className="z-10 bg-cream px-6 py-4 border-2 border-gold shadow-2xl flex flex-col items-center text-center w-36">
-            <span className="text-[10px] uppercase tracking-widest text-caramel mb-1">
-              {product.origin}
-            </span>
-            <span className="font-serif text-xl text-cocoa font-semibold">
-              {product.percentage ?? product.name.split(' ').slice(-1)[0] ?? ''}
-            </span>
-            <span className="text-[10px] uppercase text-cocoa mt-1 border-t border-cocoa/20 pt-1 w-full capitalize">
-              {product.category === 'single-origin' ? 'Single Origin' : product.category}
-            </span>
-          </div>
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="z-10 bg-cream px-6 py-4 border-2 border-gold shadow-2xl flex flex-col items-center text-center w-36">
+              <span className="text-[10px] uppercase tracking-widest text-caramel mb-1">
+                {CATEGORY_LABEL[product.category]}
+              </span>
+              <span className="font-serif text-xl text-cocoa font-semibold capitalize">
+                {product.category}
+              </span>
+            </div>
+          )}
         </div>
       </Link>
 
       <div className="p-6 flex-grow flex flex-col justify-between">
         <div>
           <p className="text-xs font-semibold tracking-widest uppercase text-caramel mb-1">
-            {product.category === 'single-origin'
-              ? 'Single Origin'
-              : product.category === 'blend'
-                ? 'Artisan Blend'
-                : 'Botanical'}
+            {CATEGORY_LABEL[product.category]}
           </p>
           <h3 className="font-serif text-xl text-cocoa mb-2 truncate">{product.name}</h3>
           <p className="text-cocoa/70 text-sm font-light mb-4 truncate">{product.description}</p>

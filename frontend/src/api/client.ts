@@ -8,12 +8,12 @@ export const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Stub functions — replace with real API calls when backend is ready.
+// Stub functions — replace with real apiClient.get(...) calls when backend is ready.
 // All API calls must go through this module; no direct fetch() in components.
 
 export async function fetchProducts(): Promise<ApiResponse<Product[]>> {
-  // TODO: replace with apiClient.get<ApiResponse<Product[]>>('/products').then(r => r.data)
-  return Promise.resolve({ data: PRODUCTS, message: 'ok', success: true })
+  // TODO: apiClient.get<ApiResponse<Product[]>>('/products').then(r => r.data)
+  return Promise.resolve({ success: true, data: PRODUCTS, errors: [], meta: null })
 }
 
 export async function fetchProduct(id: string): Promise<ApiResponse<Product>> {
@@ -21,5 +21,5 @@ export async function fetchProduct(id: string): Promise<ApiResponse<Product>> {
   if (!product) {
     return Promise.reject(new Error(`Product not found: ${id}`))
   }
-  return Promise.resolve({ data: product, message: 'ok', success: true })
+  return Promise.resolve({ success: true, data: product, errors: [], meta: null })
 }

@@ -1,17 +1,15 @@
 import { z } from 'zod'
 
+// Matches backend product model fields from issue #3:
+// id, name, description, price, image_url, category
+// Categories: dark, milk, white (2–3 categories per backend seed spec)
 export const ProductSchema = z.object({
   id: z.string(),
   name: z.string(),
-  origin: z.string(),
   description: z.string(),
   price: z.number().positive(),
-  imageGradient: z.string(),
-  category: z.enum(['single-origin', 'blend', 'botanical']),
-  percentage: z.string().optional(),
-  tasteNotes: z.array(z.string()),
-  rating: z.number().min(0).max(5),
-  reviewCount: z.number().int().nonnegative(),
+  image_url: z.string(),
+  category: z.enum(['dark', 'milk', 'white']),
 })
 
 export type Product = z.infer<typeof ProductSchema>

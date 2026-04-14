@@ -8,22 +8,16 @@ interface ProductDetailProps {
   product: Product
 }
 
-function StarRating({ rating }: { rating: number }): JSX.Element {
-  const full = Math.floor(rating)
-  const hasHalf = rating % 1 >= 0.5
-  const empty = 5 - full - (hasHalf ? 1 : 0)
+const CATEGORY_LABEL: Record<Product['category'], string> = {
+  dark: 'Dark Chocolate',
+  milk: 'Milk Chocolate',
+  white: 'White Chocolate',
+}
 
-  return (
-    <div className="flex items-center gap-0.5 text-gold" aria-label={`Rating: ${rating} out of 5`}>
-      {Array.from({ length: full }).map((_, i) => (
-        <span key={`full-${i}`}>★</span>
-      ))}
-      {hasHalf && <span>⯨</span>}
-      {Array.from({ length: empty }).map((_, i) => (
-        <span key={`empty-${i}`} className="text-cocoa/20">★</span>
-      ))}
-    </div>
-  )
+const CATEGORY_BG: Record<Product['category'], string> = {
+  dark: 'from-[#3d1f11] to-[#1a0a00]',
+  milk: 'from-[#8c6046] to-[#5a3a2a]',
+  white: 'from-[#f0d8b6] to-[#d4b998]',
 }
 
 export function ProductDetail({ product }: ProductDetailProps): JSX.Element {
@@ -55,22 +49,31 @@ export function ProductDetail({ product }: ProductDetailProps): JSX.Element {
         <div
           className={clsx(
             'w-full lg:w-1/2 relative min-h-[50vh] lg:min-h-screen overflow-hidden',
-            `bg-gradient-to-br ${product.imageGradient}`,
+            `bg-gradient-to-br ${CATEGORY_BG[product.category]}`,
           )}
         >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-cream/10 border border-gold/30 p-8 flex flex-col items-center text-center backdrop-blur-sm w-56">
-              <span className="text-xs uppercase tracking-[0.2em] text-gold mb-4">{product.origin}</span>
-              <span className="font-serif text-5xl text-cream font-medium">
-                {product.percentage ?? ''}
-              </span>
-              <span className="text-cream/60 text-sm mt-4 uppercase tracking-wider">{product.name}</span>
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-cream/10 border border-gold/30 p-8 flex flex-col items-center text-center backdrop-blur-sm w-56">
+                <span className="text-xs uppercase tracking-[0.2em] text-gold mb-4">
+                  {CATEGORY_LABEL[product.category]}
+                </span>
+                <span className="text-cream/60 text-sm mt-4 uppercase tracking-wider">{product.name}</span>
+              </div>
             </div>
-          </div>
-          {/* Origin badge */}
+          )}
+          {/* Category badge */}
           <div className="absolute top-8 left-8 bg-cream text-cocoa px-4 py-2 rounded-full flex items-center gap-2 shadow-lg z-10">
             <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-            <span className="text-xs uppercase tracking-widest font-semibold">{product.origin}</span>
+            <span className="text-xs uppercase tracking-widest font-semibold capitalize">
+              {CATEGORY_LABEL[product.category]}
+            </span>
           </div>
         </div>
 
@@ -79,16 +82,10 @@ export function ProductDetail({ product }: ProductDetailProps): JSX.Element {
           <div className="max-w-xl w-full">
 
             {/* Meta */}
-            <div className="flex items-center justify-between mb-6 border-b border-caramel/20 pb-4">
+            <div className="mb-6 border-b border-caramel/20 pb-4">
               <span className="text-xs font-semibold tracking-widest uppercase text-caramel bg-caramel/10 px-3 py-1 rounded-sm">
-                {product.category === 'single-origin' ? `Single Origin · ${product.origin}` : product.origin}
+                {CATEGORY_LABEL[product.category]}
               </span>
-              <div className="flex items-center gap-2">
-                <StarRating rating={product.rating} />
-                <span className="text-cocoa text-xs font-medium border-l border-cocoa/20 pl-2">
-                  {product.rating} ({product.reviewCount} Reviews)
-                </span>
-              </div>
             </div>
 
             {/* Title & price */}
@@ -101,20 +98,6 @@ export function ProductDetail({ product }: ProductDetailProps): JSX.Element {
             <p className="text-cocoa/80 text-lg font-light leading-relaxed mb-8">
               {product.description}
             </p>
-
-            {/* Taste notes */}
-            {product.tasteNotes.length > 0 && (
-              <div className="grid grid-cols-3 gap-3 mb-8">
-                {product.tasteNotes.map((note) => (
-                  <div
-                    key={note}
-                    className="flex flex-col items-center bg-white p-4 rounded-xl shadow-sm border border-cream-muted text-center"
-                  >
-                    <span className="text-xs uppercase tracking-wider font-medium text-cocoa">{note}</span>
-                  </div>
-                ))}
-              </div>
-            )}
 
             {/* Quantity + Add to Cart */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
