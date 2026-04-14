@@ -1,0 +1,57 @@
+import type { Product } from '../schemas/product'
+
+export const PRODUCTS: Product[] = [
+  {
+    id: 'dark-ecuador-72',
+    name: 'Dark Ecuador 72%',
+    origin: 'Ecuador',
+    description: 'Intense cocoa notes with hints of blackberry and espresso.',
+    price: 12.99,
+    imageGradient: 'from-[#4a2e26] to-[#2a1711]',
+    category: 'single-origin',
+    percentage: '72%',
+    tasteNotes: ['Dark Cherry', 'Toasted Oak', 'Espresso'],
+    rating: 4.8,
+    reviewCount: 124,
+  },
+  {
+    id: 'milk-madagascar-45',
+    name: 'Milk Madagascar 45%',
+    origin: 'Madagascar',
+    description: 'Velvety smooth milk chocolate with bright red fruit acidity.',
+    price: 12.99,
+    imageGradient: 'from-[#8c6046] to-[#5a3a2a]',
+    category: 'single-origin',
+    percentage: '45%',
+    tasteNotes: ['Red Berries', 'Caramel', 'Cream'],
+    rating: 4.6,
+    reviewCount: 98,
+  },
+  {
+    id: 'white-vanilla-bean',
+    name: 'White Vanilla Bean',
+    origin: 'Blend',
+    description: 'Rich cocoa butter flecked with raw Tahitian vanilla.',
+    price: 11.99,
+    imageGradient: 'from-[#f0d8b6] to-[#d4b998]',
+    category: 'blend',
+    tasteNotes: ['Vanilla', 'Butter', 'Honey'],
+    rating: 4.5,
+    reviewCount: 76,
+  },
+  {
+    id: 'ruby-raspberry-35',
+    name: 'Ruby Raspberry 35%',
+    origin: 'Ruby Cacao',
+    description: 'Natural ruby cacao layered with freeze-dried tart raspberries.',
+    price: 13.99,
+    imageGradient: 'from-[#a64a5c] to-[#732a39]',
+    category: 'botanical',
+    percentage: '35%',
+    tasteNotes: ['Raspberry', 'Rose', 'Citrus'],
+    rating: 4.7,
+    reviewCount: 89,
+  },
+]
+
+export const FEATURED_PRODUCT_ID = 'dark-ecuador-72'
