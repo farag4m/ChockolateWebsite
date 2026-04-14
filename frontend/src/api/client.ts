@@ -16,10 +16,10 @@ export async function fetchProducts(): Promise<ApiResponse<Product[]>> {
   return Promise.resolve({ success: true, data: PRODUCTS, errors: [], meta: null })
 }
 
-export async function fetchProduct(id: string): Promise<ApiResponse<Product>> {
+export async function fetchProduct(id: number): Promise<ApiResponse<Product>> {
   const product = PRODUCTS.find((p) => p.id === id)
   if (!product) {
-    return Promise.reject(new Error(`Product not found: ${id}`))
+    return Promise.reject(new Error(`Product not found: ${String(id)}`))
   }
   return Promise.resolve({ success: true, data: product, errors: [], meta: null })
 }

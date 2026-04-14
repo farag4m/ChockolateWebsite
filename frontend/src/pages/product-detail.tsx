@@ -4,10 +4,13 @@ import { ProductDetail } from '../components/ProductDetail'
 import { useProduct } from '../hooks/useProducts'
 
 export default function ProductDetailPage(): JSX.Element {
-  const { id } = useParams<{ id: string }>()
-  const { data, isLoading, isError } = useProduct(id ?? '')
+  const { id: idParam } = useParams<{ id: string }>()
+  const numericId = idParam !== undefined ? parseInt(idParam, 10) : NaN
+  const isValidId = !isNaN(numericId)
 
-  if (!id) {
+  const { data, isLoading, isError } = useProduct(numericId)
+
+  if (!isValidId) {
     return (
       <main className="pt-20 min-h-screen bg-cream flex flex-col items-center justify-center gap-4">
         <p className="text-cocoa font-serif text-2xl">Product not found.</p>

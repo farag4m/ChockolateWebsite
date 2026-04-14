@@ -8,8 +8,8 @@ export interface CartContextValue {
   items: CartItem[]
   itemCount: number
   addItem: (product: Product, quantity?: number) => void
-  removeItem: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
+  removeItem: (productId: number) => void
+  updateQuantity: (productId: number, quantity: number) => void
   clear: () => void
 }
 
@@ -26,8 +26,8 @@ interface CartState {
 
 type CartAction =
   | { type: 'ADD_ITEM'; product: Product; quantity: number }
-  | { type: 'REMOVE_ITEM'; productId: string }
-  | { type: 'UPDATE_QUANTITY'; productId: string; quantity: number }
+  | { type: 'REMOVE_ITEM'; productId: number }
+  | { type: 'UPDATE_QUANTITY'; productId: number; quantity: number }
   | { type: 'CLEAR' }
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
@@ -78,11 +78,11 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     dispatch({ type: 'ADD_ITEM', product, quantity })
   }
 
-  const removeItem = (productId: string): void => {
+  const removeItem = (productId: number): void => {
     dispatch({ type: 'REMOVE_ITEM', productId })
   }
 
-  const updateQuantity = (productId: string, quantity: number): void => {
+  const updateQuantity = (productId: number, quantity: number): void => {
     dispatch({ type: 'UPDATE_QUANTITY', productId, quantity })
   }
 

@@ -11,10 +11,10 @@ export function useProducts(): UseQueryResult<ApiResponse<Product[]>, Error> {
   })
 }
 
-export function useProduct(id: string): UseQueryResult<ApiResponse<Product>, Error> {
+export function useProduct(id: number): UseQueryResult<ApiResponse<Product>, Error> {
   return useQuery<ApiResponse<Product>, Error>({
     queryKey: ['products', id],
     queryFn: () => fetchProduct(id),
-    enabled: Boolean(id),
+    enabled: !isNaN(id),
   })
 }

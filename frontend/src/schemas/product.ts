@@ -4,7 +4,7 @@ import { z } from 'zod'
 // id, name, description, price, image_url, category
 // Categories: dark, milk, white (2–3 categories per backend seed spec)
 export const ProductSchema = z.object({
-  id: z.string(),
+  id: z.number().int(),
   name: z.string(),
   description: z.string(),
   price: z.number().positive(),
