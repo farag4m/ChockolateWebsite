@@ -33,7 +33,7 @@ export function Navbar(): JSX.Element {
         </div>
 
         {/* Cart */}
-        <Link to="/shop" className="relative group" aria-label={`Cart, ${itemCount} items`}>
+        <Link to="/cart" className="relative group" aria-label={`Cart, ${itemCount} items`}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6 text-cocoa group-hover:text-gold transition-colors duration-300"
