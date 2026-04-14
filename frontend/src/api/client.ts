@@ -1,0 +1,25 @@
+import axios from 'axios'
+import type { ApiResponse } from '../types/api'
+import type { Product } from '../schemas/product'
+import { PRODUCTS } from '../constants/products'
+
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? '/api',
+  headers: { 'Content-Type': 'application/json' },
+})
+
+// Stub functions — replace with real apiClient.get(...) calls when backend is ready.
+// All API calls must go through this module; no direct fetch() in components.
+
+export async function fetchProducts(): Promise<ApiResponse<Product[]>> {
+  // TODO: apiClient.get<ApiResponse<Product[]>>('/products').then(r => r.data)
+  return Promise.resolve({ success: true, data: PRODUCTS, errors: [], meta: null })
+}
+
+export async function fetchProduct(id: number): Promise<ApiResponse<Product>> {
+  const product = PRODUCTS.find((p) => p.id === id)
+  if (!product) {
+    return Promise.reject(new Error(`Product not found: ${String(id)}`))
+  }
+  return Promise.resolve({ success: true, data: product, errors: [], meta: null })
+}
