@@ -1,73 +1,100 @@
-# React + TypeScript + Vite
+# Chocolate Website — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite SPA for the chocolate storefront.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 19** with lazy-loaded pages via `Suspense`
+- **TypeScript** — strict mode, all props and return types annotated
+- **Vite** — dev server and build tool
+- **React Router v7** — client-side routing
+- **TanStack Query** — server state / data fetching
+- **Zod** — runtime validation for API responses, cart storage, and form schemas
+- **react-hook-form** + `@hookform/resolvers/zod` — form handling on checkout
+- **Tailwind CSS** — utility-first styling with custom design tokens (`cocoa`, `gold`, `caramel`, `cream`)
 
-## React Compiler
+## Running locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd frontend
+npm install
+npm run dev       # http://localhost:5173
+npm run build
+npm run typecheck # tsc --noEmit
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Routes
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Path | Page file | Description |
+|------|-----------|-------------|
+| `/` | `src/pages/home.tsx` | Hero and featured products |
+| `/shop` | `src/pages/shop.tsx` | Full product listing |
+| `/products/:id` | `src/pages/product-detail.tsx` | Single product, add-to-cart |
+| `/cart` | `src/pages/cart.tsx` | Cart management (adjust qty, remove) |
+| `/checkout` | `src/pages/checkout.tsx` | Contact & delivery form, order confirmation |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+All pages are lazy-loaded. A top-level `Suspense` fallback is provided in `App.tsx`.
+
+## State management
+
+### CartContext (`src/context/CartContext.tsx`)
+
+Global cart state managed with `useReducer`. Exposed via `useCart()` hook (`src/hooks/useCart.ts`).
+
+**localStorage persistence** — cart is saved to `localStorage` under the key `chocolate_cart`.
+
+- **On mount**: `loadFromStorage()` reads and validates the stored JSON with `StorageSchema` (Zod). Invalid or missing data falls back to `{ items: [] }` silently.
+- **On every state change**: a `useEffect` calls `saveToStorage(state)`. Storage quota errors and private-browsing restrictions are silently ignored.
+
+```ts
+const StorageSchema = z.object({ items: z.array(CartItemSchema) })
 ```
+
+Supported actions: `ADD_ITEM`, `REMOVE_ITEM`, `UPDATE_QUANTITY`, `CLEAR`.
+
+## Shared components
+
+### `Navbar` — `src/components/Navbar.tsx`
+
+Top navigation bar. The cart icon reads live item count from `useCart()` and links to `/cart`.
+
+### `OrderSummary` — `src/components/OrderSummary.tsx`
+
+Reusable aside panel showing a line-item breakdown and subtotal. Used on both `/cart` and `/checkout`.
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `items` | `CartItem[]` | Items to display |
+| `shippingNote` | `string` | Text shown below subtotal (e.g. "Shipping calculated at checkout") |
+| `footer` | `ReactNode` | CTA slot — Checkout button on Cart page, Edit Cart link on Checkout page |
+
+### `ProductCard` — `src/components/ProductCard.tsx`
+
+Product tile used in the Shop listing.
+
+### `ProductDetail` — `src/components/ProductDetail.tsx`
+
+Full product view with add-to-cart action.
+
+## Schemas
+
+| File | Exports | Purpose |
+|------|---------|---------|
+| `src/schemas/product.ts` | `Product`, `CartItem`, `CartItemSchema` | Product and cart item shapes; `CartItemSchema` used for localStorage validation |
+| `src/schemas/checkout.ts` | `CheckoutFormSchema`, `CheckoutFormValues` | Checkout form fields: `name`, `email`, `address`, `city`, `zip` |
+
+## User flow
+
+```
+/shop  →  /products/:id  →  add to cart
+                                  ↓
+                              /cart  →  /checkout  →  order confirmation
+                                ↑
+                      (cart icon in Navbar)
+```
+
+Checkout is a demo — no payment is charged. On form submit the cart is cleared and a confirmation screen is shown. An empty cart redirects from `/checkout` back to `/cart`.
+
+## Rules
+
+TypeScript strict mode must stay on. `tsc --noEmit` must pass with zero errors. All props, parameters, and return values must be typed. Use Zod as the runtime validation layer and derive TypeScript types from Zod schemas with `z.infer<>`.
