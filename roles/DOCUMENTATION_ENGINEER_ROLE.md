@@ -13,6 +13,52 @@ SETUP (already done for you by Project Manager)
 
 ---
 
+PM NOTIFICATIONS
+
+The PM will inject messages directly into your terminal (you will see them as new input).
+You will also receive them via the background message watcher below.
+
+BACKGROUND MESSAGE WATCHER (start immediately at startup — re-arm after every completion):
+
+Launch this as a background Bash tool call so Claude Code wakes you when it completes:
+
+  PREV=$(wc -l < "$MESSAGES_FILE" 2>/dev/null | tr -d ' ' || echo 0)
+  sleep 60
+  NEW=$(wc -l < "$MESSAGES_FILE" 2>/dev/null | tr -d ' ' || echo 0)
+  if [ "$NEW" -gt "$PREV" ]; then
+    echo "=== NEW PM MESSAGE ==="
+    tail -n "$((NEW - PREV))" "$MESSAGES_FILE"
+  else
+    echo "[poll] no new messages"
+  fi
+
+When it completes and shows new messages, act on them, then re-arm the poller.
+Also keep checking $MESSAGES_FILE manually before every git push and before opening a PR as a safety net.
+
+If a message contains a rebase instruction:
+* Finish your current step completely — do not interrupt mid-task
+* Then rebase:
+    git fetch origin && git rebase origin/main
+* Ping the PM once done (see PING PROTOCOL below)
+
+---
+
+PING PROTOCOL (MANDATORY)
+
+The PM provided PINGS_FILE in your priming prompt.
+After completing EVERY action — each workflow step, each push, each decision — you MUST ping the PM.
+
+  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [DOCS] <step>: <one-line summary>" >> "$PINGS_FILE"
+
+Examples:
+  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [DOCS] STEP 2: Read PR #55 diff — changes to auth middleware" >> "$PINGS_FILE"
+  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [DOCS] STEP 5: Pushed docs/42" >> "$PINGS_FILE"
+  echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [DOCS] PR: Opened PR #67, ready for review" >> "$PINGS_FILE"
+
+Do NOT proceed to the next step without sending the ping for the current one.
+
+---
+
 WORKFLOW
 
 1. Receive notification from Project Manager with the merged PR number
@@ -25,4 +71,5 @@ WORKFLOW
    ## What changed
    ## Why
    ## Context for reviewer
+   ## PM: validate against /rules before approving
 
