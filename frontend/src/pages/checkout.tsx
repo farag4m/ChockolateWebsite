@@ -7,6 +7,7 @@ import { clsx } from 'clsx'
 import { useCart } from '../hooks/useCart'
 import { CheckoutFormSchema } from '../schemas/checkout'
 import type { CheckoutFormValues } from '../schemas/checkout'
+import { OrderSummary } from '../components/OrderSummary'
 
 // ─── FieldError ───────────────────────────────────────────────────────────────
 
@@ -57,8 +58,6 @@ function OrderConfirmation(): JSX.Element {
 export default function CheckoutPage(): JSX.Element {
   const { items, clear } = useCart()
   const [confirmed, setConfirmed] = useState(false)
-
-  const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
 
   const {
     register,
@@ -230,37 +229,18 @@ export default function CheckoutPage(): JSX.Element {
             </form>
 
             {/* Order summary */}
-            <aside className="lg:w-80 w-full flex-shrink-0">
-              <div className="bg-white rounded-2xl p-8 border border-cream-muted shadow-[0_4px_40px_rgba(26,10,0,0.04)]">
-                <h2 className="font-serif text-2xl text-cocoa mb-6">Order Summary</h2>
-
-                <div className="space-y-3 mb-6">
-                  {items.map((item) => (
-                    <div key={item.product.id} className="flex justify-between text-sm text-cocoa/70">
-                      <span className="truncate pr-2">{item.product.name} × {item.quantity}</span>
-                      <span className="tabular-nums flex-shrink-0">
-                        ${(item.product.price * item.quantity).toFixed(2)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border-t border-cream-muted pt-4 mb-4">
-                  <div className="flex justify-between text-cocoa font-medium text-base">
-                    <span>Subtotal</span>
-                    <span className="tabular-nums">${subtotal.toFixed(2)}</span>
-                  </div>
-                  <p className="text-xs text-caramel/60 mt-1">Shipping calculated separately</p>
-                </div>
-
+            <OrderSummary
+              items={items}
+              shippingNote="Shipping calculated separately"
+              footer={
                 <Link
                   to="/cart"
                   className="text-sm text-caramel hover:text-gold underline underline-offset-2 transition-colors duration-200"
                 >
                   ← Edit Cart
                 </Link>
-              </div>
-            </aside>
+              }
+            />
 
           </div>
         </div>
