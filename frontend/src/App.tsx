@@ -8,6 +8,8 @@ import { lazy, Suspense } from 'react'
 const HomePage = lazy(() => import('./pages/home'))
 const ShopPage = lazy(() => import('./pages/shop'))
 const ProductDetailPage = lazy(() => import('./pages/product-detail'))
+const CartPage = lazy(() => import('./pages/cart'))
+const CheckoutPage = lazy(() => import('./pages/checkout'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +39,8 @@ export default function App(): JSX.Element {
               <Route path="/" element={<HomePage />} />
               <Route path="/shop" element={<ShopPage />} />
               <Route path="/products/:id" element={<ProductDetailPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
             </Routes>
           </Suspense>
         </BrowserRouter>

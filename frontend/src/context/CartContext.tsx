@@ -1,6 +1,33 @@
-import { createContext, useReducer } from 'react'
+import { createContext, useEffect, useReducer } from 'react'
 import type { JSX, ReactNode } from 'react'
+import { z } from 'zod'
+import { CartItemSchema } from '../schemas/product'
 import type { CartItem, Product } from '../schemas/product'
+
+// ─── localStorage persistence ─────────────────────────────────────────────────
+
+const STORAGE_KEY = 'chocolate_cart'
+
+const StorageSchema = z.object({ items: z.array(CartItemSchema) })
+
+function loadFromStorage(): CartState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return { items: [] }
+    const result = StorageSchema.safeParse(JSON.parse(raw))
+    return result.success ? result.data : { items: [] }
+  } catch {
+    return { items: [] }
+  }
+}
+
+function saveToStorage(state: CartState): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  } catch {
+    // quota exceeded or private browsing — silently ignore
+  }
+}
 
 // ─── Context value type ───────────────────────────────────────────────────────
 
@@ -70,7 +97,11 @@ interface CartProviderProps {
 }
 
 export function CartProvider({ children }: CartProviderProps): JSX.Element {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] })
+  const [state, dispatch] = useReducer(cartReducer, undefined, loadFromStorage)
+
+  useEffect(() => {
+    saveToStorage(state)
+  }, [state])
 
   const itemCount = state.items.reduce((sum, i) => sum + i.quantity, 0)
 
